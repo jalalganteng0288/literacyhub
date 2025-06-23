@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critical Literacy: Explore the World Through Text</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .scroll-mt-24 {
+            scroll-margin-top: 6rem;
+        }
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .fade-in-section { animation: fadeIn 0.8s ease-out forwards; }
+        .pulse-animation { animation: pulse 2.5s infinite ease-in-out; }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(to right, #4f46e5, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Game & Tab Styles */
+        .game-tab { transition: all 0.3s ease; }
+        .game-tab.active { background-color: #4f46e5; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4); }
+        .game-content, #contact-success-message { display: none; animation: fadeIn 0.5s ease-out; }
+        .game-content.active, #contact-form.active { display: block; }
+        #contact-success-message.active { display: flex; }
+        
+        /* Draggable and Droppable Styles */
+        .draggable-item, .cloze-word { cursor: grab; }
+        .draggable-item:active, .cloze-word:active { cursor: grabbing; transform: scale(1.05); z-index: 10; }
+        .drop-zone.over, .cloze-drop-zone.over { background-color: #374151; border-style: dashed; }
+        .correct-drop { background-color: #166534 !important; border: 2px solid #22c55e !important; }
+        .incorrect-drop { background-color: #991b1b !important; border: 2px solid #ef4444 !important; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-overlay.active { display: block; }
+        .modal-content {
+            position: relative;
+            margin: 4rem auto;
+            width: 90%;
+            max-width: 1024px;
+            animation: fadeInScale 0.4s ease-out;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .modal-close-btn:hover { color: #fff; transform: rotate(90deg); }
+    </style>
+</head>
+<body class="bg-slate-900 text-gray-200">
+
+    <!-- Header & Navigation -->
+    <header class="bg-slate-900/80 backdrop-blur-sm shadow-lg sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-extrabold gradient-text">Literacy Hub</a>
+            <ul class="hidden md:flex space-x-8 font-semibold">
+                <li><a href="#dashboard" class="hover:text-pink-400 transition-colors">Dashboard</a></li>
+                <li><a href="#games" class="hover:text-pink-400 transition-colors">Games</a></li>
+                <li><a href="#contact" class="hover:text-pink-400 transition-colors">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <!-- Hero Section -->
+        <section class="text-center mb-20 md:mb-28 fade-in-section">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4">Explore the World Through Text</h1>
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">Welcome! This website is designed to sharpen your reading comprehension and critical thinking skills with engaging genres and interactive games.</p>
+        </section>
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard" class="mb-20 scroll-mt-24 fade-in-section">
+            <h2 class="text-4xl font-extrabold text-white text-center mb-12">Genre Dashboard</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Narrative Card -->
+                <div class="bg-slate-800/50 rounded-2xl shadow-2xl p-6 flex flex-col items-center text-center transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-pink-500/20">
+                    <i class="fas fa-book-open text-5xl text-pink-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-white mb-2">Narrative Texts</h3>
+                    <p class="text-gray-400 mb-6 flex-grow">Explore captivating stories, legends, and folktales that build characters and plot. Uncover the structure of storytelling.</p>
+                    <button class="genre-btn bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105" data-modal="narrative-modal">Explore Genre</button>
+                </div>
+                <!-- Exposition Card -->
+                <div class="bg-slate-800/50 rounded-2xl shadow-2xl p-6 flex flex-col items-center text-center transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-cyan-500/20">
+                    <i class="fas fa-newspaper text-5xl text-cyan-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-white mb-2">Exposition Texts</h3>
+                    <p class="text-gray-400 mb-6 flex-grow">Dive into informative articles that explain, describe, and provide facts. Learn to identify main ideas and arguments.</p>
+                    <button class="genre-btn bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105" data-modal="exposition-modal">Explore Genre</button>
+                </div>
+                <!-- Procedural Card -->
+                <div class="bg-slate-800/50 rounded-2xl shadow-2xl p-6 flex flex-col items-center text-center transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-orange-500/20">
+                    <i class="fas fa-list-check text-5xl text-orange-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-white mb-2">Procedural Texts</h3>
+                    <p class="text-gray-400 mb-6 flex-grow">Master step-by-step instructions and guides. Understand the logic behind processes and how to achieve a goal.</p>
+                    <button class="genre-btn bg-orange-600 hover:bg-orange-500 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105" data-modal="procedural-modal">Explore Genre</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- EDUCATIONAL GAMES HUB -->
+        <section id="games" class="mb-20 scroll-mt-24 fade-in-section">
+            <div class="text-center mb-10">
+                <i class="fas fa-gamepad text-5xl gradient-text pulse-animation"></i>
+                <h2 class="text-4xl font-extrabold text-white mt-4">Educational Games</h2>
+                <p class="text-gray-400">Learn while playing with our fun, interactive games!</p>
+            </div>
+            <div class="bg-slate-800/50 rounded-2xl shadow-2xl p-4 md:p-8">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mb-8 p-2 bg-slate-700/50 rounded-xl">
+                    <button class="game-tab active w-full sm:w-auto font-bold py-3 px-6 rounded-lg" data-tab="story-structure">Story Structure</button>
+                    <button class="game-tab w-full sm:w-auto font-bold py-3 px-6 rounded-lg" data-tab="word-scramble">Word Scramble</button>
+                    <button class="game-tab w-full sm:w-auto font-bold py-3 px-6 rounded-lg" data-tab="text-completion">Text Completion</button>
+                </div>
+                <div id="game-container">
+                    <div id="story-structure" class="game-content active"></div>
+                    <div id="word-scramble" class="game-content"></div>
+                    <div id="text-completion" class="game-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="mb-16 scroll-mt-24 fade-in-section">
+            <div class="text-center mb-10">
+                <i class="fas fa-paper-plane text-5xl gradient-text"></i>
+                <h2 class="text-4xl font-extrabold text-white mt-4">Contact & Feedback</h2>
+                <p class="text-gray-400">Have a question or suggestion? We'd love to hear from you!</p>
+            </div>
+             <div id="contact-container" class="bg-slate-800/50 rounded-2xl shadow-2xl p-6 md:p-10 max-w-2xl mx-auto"></div>
+        </section>
+    </main>
+
+    <!-- MODALS (Hidden by default) -->
+    <!-- Narrative Modal -->
+    <div id="narrative-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-close-btn">&times;</div>
+            <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-10">
+                <h2 class="text-3xl font-bold text-pink-400 mb-6 border-b-4 border-pink-500/30 pb-2">Narrative Genre: Tales & Legends</h2>
+                <!-- Story 1 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">The Legend of Malin Kundang</h3>
+                    <div class="space-y-4 text-gray-300 text-justify"><p><strong>Orientation:</strong> 
+                        Once upon a time, in a small village on the coast of West Sumatra, lived a poor widow with her only son, Malin Kundang. They were very poor, and Malin often helped his mother fish and sell their catch to make ends meet. Malin was a diligent and ambitious young man, but he harbored a strong desire to become rich and leave his impoverished life behind. He dreamed of sailing away on a grand ship to seek his fortune in a faraway land. His mother, though sad at the thought of him leaving, reluctantly gave her blessing, hoping he would find success and remember his roots..</p><p><strong>Complication:</strong>
+                         Years passed, and Malin Kundang indeed found great success. He became a wealthy merchant, owning many ships and trading goods across the seas. He married a beautiful woman and lived a life of luxury. However, with his newfound wealth and status, Malin became arrogant and forgot his humble beginnings. One day, his magnificent ship docked near his home village. The villagers recognized his ship and excitedly informed his aging mother. Overjoyed, she rushed to the shore, pushing through the crowd, eager to embrace her beloved son. When she finally reached him and called his name, Malin, embarrassed by her old and ragged appearance in front of his wealthy wife and crew, denied knowing her. He cruelly pushed her away, claiming she was a beggar trying to trick him. His mother, heartbroken and devastated by his cruel rejection, knelt down and, with tears streaming down her face, uttered a curse, praying to God to punish her ungrateful son.</p><p><strong>Resolution:</strong>
+                            Immediately after his mother's heartfelt curse, the sky grew dark, and a violent storm erupted. The winds howled, and the waves crashed furiously against Malin's ship. The ship began to rock violently, and the crew panicked. Malin, along with his ship, was caught in the midst of the raging tempest. In a horrifying display of divine justice, Malin Kundang slowly turned into stone. His body, his ship, and all his cargo transformed into rock formations, serving as a permanent reminder of the dire consequences of filial impiety and an ungrateful heart. To this day, the rock formations resembling a man kneeling and parts of a ship can still be seen on the coast, bearing witness to the tragic legend of Malin Kundang.</p></div>
+                </article>
+                <!-- Story 2 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">The Legend of Roro Jonggrang</h3>
+                    <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Orientation:</strong> Long ago, in ancient Java, there were two neighboring kingdoms: the Kingdom of Prambanan, ruled by King Prabu Baka, and the Kingdom of Pengging, led by Bandung Bondowoso. Bandung Bondowoso was a powerful knight, known for his extraordinary strength and mystical abilities, including the power to summon spirits or genies. One day, Bandung Bondowoso attacked and successfully conquered the Kingdom of Prambanan, also killing King Prabu Baka. In Prambanan lived an incredibly beautiful princess named Roro Jonggrang, the daughter of the slain King Prabu Baka. Bandung Bondowoso, immediately captivated by her beauty, deeply desired to marry her.</p>
+                        <p><strong>Complication:</strong> Roro Jonggrang, still in mourning and deeply repulsed by the man who had killed her father, naturally refused Bandung Bondowoso's proposal. However, she knew she couldn't openly defy Bandung Bondowoso's immense power. Therefore, she devised a seemingly impossible condition: she would agree to marry him if he could build her one thousand temples in just one single night, before dawn broke. Bandung Bondowoso, full of confidence in his supernatural abilities, accepted the challenge. As night fell, he immediately began construction, summoning an army of genies and spirits to help him erect the temples at an incredible speed. Roro Jonggrang watched in growing panic as the temples rapidly took shape. Seeing that he was close to completing the task, Roro Jonggrang realized she had to act quickly to stop him. She then ordered the palace maids to pound rice in mortars and light bonfires in the east, mimicking the sounds and sights of a new day beginning.</p>
+                        <p><strong>Resolution:</strong> The roosters, fooled by the false signs of dawn, began to crow loudly. The genies and spirits assisting Bandung Bondowoso, believing that morning had arrived and their time was up, immediately vanished, leaving the temples unfinished. Bandung Bondowoso, absolutely furious upon discovering Roro Jonggrang's trickery and realizing he had only managed to complete 999 temples, fell into a terrible rage. In his anger, he cursed Roro Jonggrang for her cunning deception. With his immense power, he instantly transformed Roro Jonggrang into the most beautiful stone statue to complete the thousand temples. To this day, the magnificent Prambanan temple complex stands, with one prominent statue within it believed to be the petrified Roro Jonggrang, forever fulfilling the condition she set, and serving as a lasting testament to the tragic love story and the princess's cleverness.</p></div>
+                </article>
+                <!-- Story 3 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">The Legend of Lake Toba</h3>
+                    <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Orientation:</strong> Long, long ago, in the fertile highlands of North Sumatra, there lived a diligent and humble young farmer named Toba. He spent his days cultivating the land and fishing in the river to sustain himself. One day, while fishing, he miraculously caught a beautiful golden fish. As he held it, the fish suddenly transformed into an astonishingly beautiful woman. She revealed herself to be a cursed princess and made Toba promise that he would never reveal her true origin to anyone. In return, she agreed to marry him. Toba, utterly enchanted by her beauty, readily agreed to her condition, and they lived happily together. Soon, they were blessed with a son whom they named Samosir.</p>
+                        <p><strong>Complication:</strong> As Samosir grew, he inherited some of his mother's supernatural traits, including a rather lazy and somewhat greedy nature. One day, Toba asked Samosir to deliver food to him in the fields. However, Samosir, feeling hungry, ate half of the food on the way before reaching his father. Toba, already tired and hungry from his work, became absolutely furious when he saw the meager portion of food. In a fit of uncontrollable anger, he lashed out at his son, completely forgetting his solemn promise to his wife. He yelled, "You child of a fish! You're just like your mother!" His words, spoken in anger, had tragically broken the sacred vow he had made.</p>
+                        <p><strong>Resolution:</strong> As soon as Toba uttered the forbidden words, the sky darkened, and thunder roared ominously. The ground began to shake violently, and rain poured down incessantly. His wife, the former golden fish, reappeared before him, her eyes filled with sorrow and profound disappointment. She told Toba that his broken promise meant she could no longer stay with him. She and Samosir then vanished into thin air. The relentless rain continued for days, causing the river to overflow and the land to become completely submerged. The water rose higher and higher, eventually forming a massive lake that swallowed the entire village. The place where Samosir stood transformed into a large island in the middle of this new lake. Thus, the immense Lake Toba was formed, with Samosir Island at its center, serving as an enduring reminder of a broken promise and the devastating consequences of anger and forgetfulness.</p>
+                    </div>
+                </article>
+                <!-- Story 4: Sangkuriang -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">The Legend of Sangkuriang (Mount Tangkuban Perahu)</h3>
+                    <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Orientation:</strong> In the highlands of West Java lived a princess named Dayang Sumbi, who was exiled for her disobedience. One day, her weaving tool fell, and she lazily vowed to marry whoever retrieved it. To her surprise, it was a male dog named Tumang, who was actually a cursed deity. She kept her promise, and they had a son, Sangkuriang. Dayang Sumbi remained eternally youthful due to divine favor.</p>
+                        <p><strong>Complication:</strong> Sangkuriang grew into a skilled hunter, unaware that Tumang, his loyal hunting companion, was his father. One day, Dayang Sumbi craved deer liver, and Sangkuriang went hunting with Tumang. After a frustrating day of finding no deer, Sangkuriang, in a fit of rage at Tumang's perceived laziness, killed the dog and took its liver to his mother. When Dayang Sumbi discovered the truth, she struck Sangkuriang on the head with a tool, leaving a deep scar, and banished him. Years later, a grown Sangkuriang returned to his homeland as a powerful wanderer. He met a beautiful young woman and fell instantly in love, not recognizing her as his own mother, Dayang Sumbi. She, however, recognized the scar on his head. Horrified, she tried to explain their relationship, but he refused to believe her.</p>
+                        <p><strong>Resolution:</strong> To prevent the incestuous marriage, Dayang Sumbi set an impossible condition: Sangkuriang must dam the Citarum river and build a large boat, all before sunrise. Sangkuriang, using his supernatural powers, summoned spirits to help him. Seeing that he was about to succeed, Dayang Sumbi prayed for help. She and the local women began pounding rice and waved red scarves, mimicking the break of dawn. The roosters crowed, and the spirits, thinking their time was up, abandoned the nearly finished boat. Enraged by this failure, Sangkuriang kicked the massive boat, which landed upside down and became Mount Tangkuban Perahu ("upturned boat").</p>
+                    </div>
+                </article>
+                <!-- Story 5: Timun Mas -->
+                <article>
+                    <h3 class="font-bold text-2xl mb-2 text-white">The Legend of Timun Mas (The Golden Cucumber)</h3>
+                    <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Orientation:</strong> An old, childless widow named Mbok Srini lived alone in a village in Central Java. She longed for a child. One day, a giant green monster named Buto Ijo passed her house and heard her prayers. He gave her a large cucumber seed and told her, "Plant this. You will have a daughter, but when she turns 17, you must return her to me to be eaten." Desperate, Mbok Srini agreed.</p>
+                        <p><strong>Complication:</strong> She planted the seed, and it grew into a massive golden cucumber. Inside, she found a beautiful baby girl, whom she named Timun Mas. Mbok Srini loved her dearly and dreaded the day Buto Ijo would return. As Timun Mas's 17th birthday approached, Mbok Srini had a dream telling her to seek help from a hermit in the mountains. The hermit gave her four small magical bundles: one containing cucumber seeds, one with needles, one with salt, and one with shrimp paste (terasi).</p>
+                        <p><strong>Resolution:</strong> When Buto Ijo came to claim his prize, Mbok Srini told Timun Mas to run and use the magical items. As the giant chased her, Timun Mas first threw the cucumber seeds, which instantly grew into a dense cucumber field that tangled Buto Ijo. Escaping, she threw the needles, which created a sharp bamboo forest. He broke through, so she threw the salt, which created a vast, deep sea. Buto Ijo managed to swim across. Finally, Timun Mas threw the last bundle, the shrimp paste. It created a boiling, bubbling lake of mud. The giant, exhausted and caught off guard, fell into the mud and drowned. Timun Mas returned home safely and lived happily ever after with her mother.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Exposition Modal -->
+    <div id="exposition-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-close-btn">&times;</div>
+            <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-10">
+                <h2 class="text-3xl font-bold text-cyan-400 mb-6 border-b-4 border-cyan-500/30 pb-2">Exposition Genre: Articles & Analyses</h2>
+                <!-- Article 1 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                     <h3 class="font-bold text-2xl mb-2 text-white">The Impact of Social Media on Teen Mental Health</h3>
+                     <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Thesis:</strong> While social media offers platforms for connection and information, its pervasive nature and specific features can significantly negatively impact teen mental health, contributing to increased anxiety, depression, and self-esteem issues.</p>
+                        <p><strong>Argument 1:</strong> Excessive social media use exposes teens to social comparison and unrealistic portrayals of life, leading to feelings of inadequacy, envy, and body image dissatisfaction. Teens constantly see curated, often perfect, versions of their peers' lives, which can create a distorted perception of reality and foster a sense of "FOMO" (Fear Of Missing Out). This constant comparison often results in lower self-esteem and increased feelings of loneliness, as their own lives may seem less exciting or ideal in comparison. The pressure to present a flawless online persona also adds significant stress, leading to a vicious cycle of anxiety and self-doubt.</p>
+                        <p><strong>Argument 2:</strong> The addictive design of social media platforms and the relentless pursuit of "likes" and validation can lead to sleep disruption and increased symptoms of anxiety and depression. The endless scroll and notifications encourage continuous engagement, often extending late into the night, which disrupts crucial sleep patterns essential for adolescent brain development and emotional regulation. Furthermore, the reliance on external validation through likes and comments can make teens highly vulnerable to mood swings and feelings of worthlessness if their posts don't receive the desired attention. This constant need for validation can heighten anxiety about social acceptance and contribute to depressive symptoms when those needs are not met.</p><p>
+                            <strong>Reiteration (Conclusion):</strong> In conclusion, despite its potential for positive connections, the inherent design and common usage patterns of social media platforms pose substantial risks to the mental well-being of teenagers. The constant exposure to idealized realities fuels harmful social comparison, while the addictive nature and pursuit of validation disrupt sleep and exacerbate feelings of anxiety and depression, ultimately underscoring the critical need for mindful usage and protective measures.</p>
+                    </div>
+                </article>
+                <!-- Article 2 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                     <h3 class="font-bold text-2xl mb-2 text-white">The Benefits of Reading Books for Brain Development</h3>
+                     <div class="space-y-4 text-gray-300 text-justify"><p>
+                        <strong>Thesis:</strong> Reading books consistently offers profound and multifaceted benefits for brain development, enhancing cognitive abilities, fostering empathy, and improving overall mental well-being across all ages.</p>
+                        <p><strong>Argument 1:</strong> Regular reading actively stimulates neural pathways and strengthens cognitive functions such as memory, focus, and analytical thinking. When reading, the brain is actively engaged in processing information, constructing narratives, and visualizing scenes, which exercises various parts of the brain simultaneously. This mental workout helps to build new neural connections and improve existing ones, leading to enhanced concentration spans and better information retention. Furthermore, grappling with complex plots and diverse vocabulary in books trains the brain to think critically and analyze information more effectively, skills that are transferable to many aspects of life.</p>
+                        <p><strong>Argument 2:</strong>  Immersing oneself in diverse narratives and characters through reading significantly boosts empathy and emotional intelligence. By experiencing stories from various perspectives, readers learn to understand and relate to different human emotions, motivations, and experiences, even those vastly different from their own. This process of stepping into another's shoes helps to develop a deeper sense of empathy and compassion, allowing individuals to better understand and navigate complex social interactions in the real world. This enhanced emotional intelligence not only improves personal relationships but also contributes to a more nuanced understanding of society.</p>
+                        <p><strong>Reiteration (Conclusion):</strong> Ultimately, the act of reading goes far beyond mere entertainment; it is a powerful exercise for the brain. The consistent engagement with books actively sharpens cognitive functions like memory and critical thinking, while simultaneously cultivating a deeper sense of empathy and emotional intelligence. These combined benefits firmly establish reading as an indispensable activity for robust brain development and overall mental enrichment.</p>
+                    </div>
+                </article>
+                <!-- Article 3 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                     <h3 class="font-bold text-2xl mb-2 text-white">Understanding Climate Change and Its Effects</h3>
+                     <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Thesis:</strong> Climate change refers to long-term shifts in temperatures and weather patterns, primarily driven by human activities, and its consequences are becoming increasingly evident across the globe.</p>
+                        <p><strong>Argument 1: The Greenhouse Effect.</strong> The primary cause of modern climate change is the enhanced greenhouse effect. Human activities, particularly the burning of fossil fuels (coal, oil, and gas) for energy, release greenhouse gases like carbon dioxide (CO2) into the atmosphere. These gases trap heat from the sun, preventing it from escaping into space and causing the Earth's average temperature to rise. While the greenhouse effect is a natural process that keeps our planet warm enough for life, the excess emissions have amplified it to dangerous levels.</p>
+                        <p><strong>Argument 2: Observable Consequences.</strong> The effects of this warming are widespread. They include more frequent and intense heatwaves, rising sea levels due to melting glaciers and ice sheets, and changes in precipitation patterns leading to severe droughts in some regions and extreme flooding in others. Ecosystems are also under threat, with many species facing extinction as their habitats change faster than they can adapt. These changes disrupt agriculture, threaten water supplies, and increase the risk of natural disasters.</p>
+                        <p><strong>Reiteration (Conclusion):</strong> In summary, climate change is a scientifically-backed phenomenon caused by human-induced greenhouse gas emissions. Its effects are not a distant threat but a present-day reality, impacting everything from weather to biodiversity. Addressing this crisis requires a global effort to reduce emissions and transition to sustainable energy sources.</p>
+                     </div>
+                </article>
+                <!-- Article 4 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                     <h3 class="font-bold text-2xl mb-2 text-white">The Importance of a Balanced Diet</h3>
+                     <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Thesis:</strong> A balanced diet is a cornerstone of good health, providing the body with the essential nutrients, vitamins, and minerals required to maintain its functions, grow, and repair itself effectively.</p>
+                        <p><strong>Argument 1: Macronutrients for Energy and Growth.</strong> The body requires three main macronutrients for energy and structure. Carbohydrates are the primary source of energy, fueling the brain and muscles. Proteins are essential for building and repairing tissues, such as muscle, skin, and hair, and for producing enzymes and hormones. Fats, particularly healthy unsaturated fats, are vital for brain function, hormone production, and absorbing fat-soluble vitamins. An imbalance, such as too many processed carbohydrates or too little protein, can lead to fatigue, muscle loss, and other health issues.</p>
+                        <p><strong>Argument 2: Micronutrients for Bodily Functions.</strong> While needed in smaller amounts, micronutrients (vitamins and minerals) are critical for a vast range of bodily processes. Vitamin C is crucial for the immune system, iron is necessary for carrying oxygen in the blood, and calcium is fundamental for strong bones and teeth. A diet rich in a variety of fruits, vegetables, and whole grains ensures an adequate supply of these micronutrients, protecting against deficiencies that can cause chronic diseases and impair daily functioning.</p>
+                        <p><strong>Reiteration (Conclusion):</strong> Therefore, consuming a varied and balanced diet is not merely about managing weight but is fundamental to our overall well-being. By providing the right mix of macro and micronutrients, we empower our bodies to function optimally, fight off disease, and maintain high energy levels throughout life.</p>
+                     </div>
+                </article>
+                 <!-- Article 5 -->
+                <article>
+                     <h3 class="font-bold text-2xl mb-2 text-white">How the Internet Works: A Simple Explanation</h3>
+                     <div class="space-y-4 text-gray-300 text-justify">
+                        <p><strong>Thesis:</strong> The internet is a global network of interconnected computers that communicate with each other using a standardized set of protocols, allowing for the near-instantaneous exchange of information across vast distances.</p>
+                        <p><strong>Argument 1: Packets and Protocols.</strong> At its core, the internet works by breaking down information (like an email, picture, or website) into small, manageable pieces called packets. Each packet contains a portion of the data as well as addressing information, indicating where it came from and where it's going. These packets travel across the network independently, often taking different routes. The process is governed by a set of rules, or protocols, primarily the Transmission Control Protocol (TCP) and the Internet Protocol (IP). IP is responsible for addressing the packets, while TCP ensures all packets arrive and are reassembled in the correct order at their destination.</p>
+                        <p><strong>Argument 2: Physical Infrastructure.</strong> This digital communication is made possible by a massive physical infrastructure. Data travels as pulses of light through vast networks of fiber-optic cables laid across continents and under oceans. It is routed through servers, routers, and switches located in data centers around the world. When you access a website, your request travels from your device, through your local Internet Service Provider (ISP), across this global network to the server hosting the website. That server then sends the website's data back to you in packets, which your browser assembles into the webpage you see.</p>
+                        <p><strong>Reiteration (Conclusion):</strong> In essence, the internet is not a single, ethereal cloud but a tangible, global system of hardware and software working in concert. By chopping data into addressed packets and sending them over a physical network guided by standard protocols, it creates the seamless web of information that has become integral to modern life.</p>
+                     </div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- Procedural Modal -->
+    <div id="procedural-modal" class="modal-overlay">
+         <div class="modal-content">
+            <div class="modal-close-btn">&times;</div>
+            <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-10">
+                <h2 class="text-3xl font-bold text-orange-400 mb-6 border-b-4 border-orange-500/30 pb-2">Procedural Genre: Guides & Instructions</h2>
+                <!-- Guide 1 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">How to Transact Safely Online</h3>
+                    <div class="space-y-4 text-gray-300">
+                        <p><strong>Goal:</strong> To protect your personal and financial information while conducting online transactions, minimizing the risk of fraud or identity theft.</p>
+                        <p><strong>Steps:</strong>Use Secure Websites (Look for HTTPS and the Padlock): Always ensure the website you're transacting on uses "HTTPS" in its URL (not just "HTTP") and displays a padlock icon in the address bar. This indicates that your connection is encrypted and secure, protecting your data from being intercepted by unauthorized parties. Avoid entering sensitive information on sites that don't have these security indicators.
+Be Wary of Phishing Attempts: Be extremely cautious of unsolicited emails, texts, or messages that ask for your personal or financial details. Never click on suspicious links or download attachments from unknown senders. Scammers often create fake websites that look legitimate to trick you into revealing your login credentials or credit card numbers. Always go directly to the official website by typing the URL yourself.
+Use Strong, Unique Passwords: Protect your accounts with complex and distinct passwords for each online service. A strong password combines uppercase and lowercase letters, numbers, and symbols. Avoid using easily guessable information like birthdays or common words. Consider using a reputable password manager to securely store and generate these unique passwords.
+Enable Two-Factor Authentication (2FA): Whenever possible, activate 2FA on your accounts. This adds an extra layer of security by requiring a second form of verification (like a code sent to your phone or generated by an app) in addition to your password. Even if someone obtains your password, they won't be able to access your account without this second factor.
+Monitor Your Accounts Regularly: Regularly check your bank statements, credit card bills, and online account activity for any unusual or unauthorized transactions. If you spot anything suspicious, report it immediately to your bank or service provider. Early detection can prevent further financial losses.
+Use a Secure Network: Avoid making online transactions, especially financial ones, when connected to public Wi-Fi networks. These networks are often unsecured and can be easily exploited by hackers. If you must use public Wi-Fi, consider using a Virtual Private Network (VPN) to encrypt your connection.</p></div>
+                </article>
+                <!-- Guide 2 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">How to Create a Strong and Secure Password</h3>
+                    <div class="space-y-4 text-gray-300">
+                        <p><strong>Goal:</strong> To create passwords that are difficult for others to guess or crack, thereby safeguarding your online accounts from unauthorized access.</p>
+                        <p><strong>Steps:</strong>Make It Long: Aim for a password that is at least 12-16 characters long, if not more. Longer passwords are inherently more secure because they increase the number of possible combinations, making them much harder for computers to brute-force (try every possible combination) or guess.
+Mix Character Types: Combine a variety of character types: uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), and symbols (!@#$%^&*). A good mix makes the password much less predictable than one using only letters or numbers.
+Avoid Personal Information and Common Words: Do not use easily guessable information like your name, birth date, pet's name, or common dictionary words. Also, avoid simple patterns like "123456" or "qwerty." Attackers often use software that tries common words and personal details first.
+Use Unique Passwords for Each Account: Never reuse the same password across multiple online accounts. If one account is compromised, all other accounts using that same password will also be vulnerable. This is perhaps the most critical rule for password security.
+Consider a Passphrase or Sentence: Instead of a single word, think of a memorable phrase or sentence and take the first letter of each word, mixing in numbers and symbols. For example, "My dog loves chasing squirrels in the park!" could become "MdLcS!iTp!". This creates a long, complex, but still memorable password.
+Utilize a Password Manager: For the ultimate convenience and security, use a reputable password manager (e.g., LastPass, 1Password, Bitwarden). These tools can generate strong, unique passwords for all your accounts and securely store them, requiring you to only remember one master password. They also help you autofill login details, simplifying the process.
+Enable Two-Factor Authentication (2FA): While not strictly part of password creation, enabling 2FA (also known as multi-factor authentication) whenever available adds a crucial extra layer of security. Even if your password is somehow compromised, an attacker would still need a second verification step (like a code from your phone) to access your account.</p></div>
+                </article>
+                 <!-- Guide 3 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">Basic First Aid for Common Injuries (Cuts and Scrapes)</h3>
+                    <div class="space-y-4 text-gray-300">
+                        <p><strong>Goal:</strong> To clean and protect a minor cut or scrape to prevent infection and promote healing.</p>
+                        <p><strong>Materials:</strong> Clean water, mild soap, sterile gauze or clean cloth, antiseptic wipe (optional), adhesive bandage.</p>
+                        <p><strong>Steps:</strong></p>
+                        <ol class="list-decimal list-inside ml-4 space-y-2">
+                            <li><strong>Wash Your Hands:</strong> First, thoroughly wash your hands with soap and water to avoid introducing bacteria into the wound.</li>
+                            <li><strong>Stop the Bleeding:</strong> Apply gentle, direct pressure to the wound with a sterile gauze or clean cloth for a few minutes until the bleeding stops. For minor scrapes, this step may not be necessary.</li>
+                            <li><strong>Clean the Wound:</strong> Rinse the wound well with clean, running water. Use soap to clean the skin around the wound, but try to keep soap out of the wound itself as it can cause irritation. Use tweezers cleaned with alcohol to remove any dirt or debris that remains after washing.</li>
+                            <li><strong>Apply an Antiseptic (Optional):</strong> If you have an antiseptic wipe or cream, you can apply a thin layer to the wound to help kill germs. However, simple cleaning is often sufficient for minor cuts.</li>
+                            <li><strong>Cover the Wound:</strong> Apply a sterile adhesive bandage or gauze held in place with medical tape. Covering the wound keeps it clean and protects it from bacteria and further injury.</li>
+                            <li><strong>Change the Dressing:</strong> Change the bandage at least once a day, or whenever it becomes wet or dirty. Watch for signs of infection, such as increased redness, swelling, pain, or pus. If these occur, seek medical attention.</li>
+                        </ol>
+                    </div>
+                </article>
+                 <!-- Guide 4 -->
+                <article class="mb-12 pb-8 border-b border-slate-700">
+                    <h3 class="font-bold text-2xl mb-2 text-white">How to Write an Effective Email</h3>
+                    <div class="space-y-4 text-gray-300">
+                        <p><strong>Goal:</strong> To compose a clear, professional, and effective email that gets the desired response.</p>
+                        <p><strong>Steps:</strong></p>
+                        <ol class="list-decimal list-inside ml-4 space-y-2">
+                            <li><strong>Write a Clear Subject Line:</strong> The subject line should be a brief and accurate summary of the email's content. For example, "Question about Marketing Report" is better than "Question" or leaving it blank.</li>
+                            <li><strong>Use a Professional Salutation:</strong> Start with a proper greeting. "Dear Mr. Smith," or "Hello Dr. Jones," are standard. For less formal contexts, "Hi [First Name]," is often acceptable.</li>
+                            <li><strong>State Your Purpose Early:</strong> Get straight to the point in the first sentence or two. State why you are writing. For example, "I am writing to inquire about the status of my application."</li>
+                            <li><strong>Keep the Body Concise and Clear:</strong> Use short paragraphs and simple language. If you need to discuss multiple points, use bullet points or numbered lists to make the email easy to scan and understand.</li>
+                            <li><strong>Include a Call to Action:</strong> Clearly state what you want the recipient to do. For example, "Could you please review the attached document by Friday?" or "Please let me know a time that works for a brief call."</li>
+                            <li><strong>Use a Professional Closing:</strong> End your email with a polite closing, such as "Sincerely," "Best regards," or "Thank you," followed by your name.</li>
+                            <li><strong>Proofread Before Sending:</strong> Always read your email one last time to check for spelling, grammar, and punctuation errors. Make sure you have attached any necessary files.</li>
+                        </ol>
+                    </div>
+                </article>
+                 <!-- Guide 5 -->
+                <article>
+                    <h3 class="font-bold text-2xl mb-2 text-white">A Beginner's Guide to Digital Photography</h3>
+                    <div class="space-y-4 text-gray-300">
+                        <p><strong>Goal:</strong> To understand the basic principles of digital photography to start taking better pictures.</p>
+                        <p><strong>Steps:</strong></p>
+                        <ol class="list-decimal list-inside ml-4 space-y-2">
+                            <li><strong>Understand the Exposure Triangle:</strong> Photography is all about capturing light. The three key settings that control this are Aperture (the size of the lens opening), Shutter Speed (how long the lens is open), and ISO (the sensor's sensitivity to light). Learn how changing one affects the others to control the brightness and look of your photo.</li>
+                            <li><strong>Master Composition with the Rule of Thirds:</strong> Imagine your frame is divided into a 3x3 grid. Instead of placing your subject right in the center, place it along one of the grid lines or at an intersection point. This simple technique creates more balanced and visually interesting photos.</li>
+                            <li><strong>Pay Attention to Lighting:</strong> Light is the most crucial element. Avoid harsh midday sun, which creates strong shadows. The "golden hours"—the hour after sunrise and the hour before sunset—provide soft, warm light that is much more flattering for most subjects.</li>
+                            <li><strong>Keep Your Horizon Straight:</strong> Unless you are intentionally going for a creative Dutch angle, make sure your horizons (where the land or sea meets the sky) are straight. A crooked horizon can be very distracting. Most cameras have a built-in level or grid display to help with this.</li>
+                            <li><strong>Focus on the Eyes:</strong> When taking pictures of people or animals, always make sure the eyes are in sharp focus. The eyes are the focal point of a portrait, and sharp eyes create a connection with the viewer.</li>
+                            <li><strong>Experiment and Practice:</strong> The best way to learn is by doing. Don't be afraid to experiment with different settings, angles, and subjects. Take lots of pictures and review them to see what worked and what didn't.</li>
+                        </ol>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <p>&copy; 2024 Critical Literacy Hub. Created as a rubric fulfillment project.</p>
+            <p class="text-sm mt-2">Responsive and functional design for all devices.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Intersection Observer for Animations ---
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-section');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            sections.forEach(section => observer.observe(section));
+
+            // --- MODAL LOGIC ---
+            const genreButtons = document.querySelectorAll('.genre-btn');
+            const modalOverlays = document.querySelectorAll('.modal-overlay');
+            const closeButtons = document.querySelectorAll('.modal-close-btn');
+
+            genreButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const modalId = button.getAttribute('data-modal');
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            function closeModal() {
+                modalOverlays.forEach(modal => modal.classList.remove('active'));
+                document.body.style.overflow = 'auto';
+            }
+
+            closeButtons.forEach(button => button.addEventListener('click', closeModal));
+            modalOverlays.forEach(overlay => {
+                overlay.addEventListener('click', (event) => {
+                    if (event.target === overlay) closeModal();
+                });
+            });
+
+            // --- INJECT & INITIALIZE DYNAMIC CONTENT ---
+            
+            // Inject Games HTML
+            const gameContainer = document.getElementById('game-container');
+            if(gameContainer) {
+                 gameContainer.querySelector('#story-structure').innerHTML = `
+                    <h3 class="font-bold text-xl text-center mb-1 text-white">Story Scramble</h3>
+                    <p class="text-gray-400 text-center mb-6">Drag and drop the story elements to match them with the correct part of a narrative text.</p>
+                    <div class="flex flex-wrap gap-4 mb-6 justify-center" id="draggable-items"></div>
+                    <div id="drop-zones" class="space-y-4 max-w-2xl mx-auto">
+                        <div class="drop-zone bg-slate-700 p-4 rounded-lg border-2 border-slate-600" data-target="orientation"><strong>Orientation:</strong> Introduces characters and setting.</div>
+                        <div class="drop-zone bg-slate-700 p-4 rounded-lg border-2 border-slate-600" data-target="complication"><strong>Complication:</strong> The main problem arises.</div>
+                        <div class="drop-zone bg-slate-700 p-4 rounded-lg border-2 border-slate-600" data-target="resolution"><strong>Resolution:</strong> The story concludes.</div>
+                    </div>
+                    <p id="narrative-feedback" class="mt-4 font-semibold text-center h-6"></p>
+                `;
+                 gameContainer.querySelector('#word-scramble').innerHTML = `<div class="bg-slate-700 p-6 rounded-lg max-w-md mx-auto text-center"><div class="flex justify-between items-center mb-4 text-white"><span class="font-semibold">Score: <span id="ws-score">0</span></span><span id="ws-game-counter" class="font-semibold">Game 1/4</span></div><h3 class="text-xl font-bold mb-2 text-white">Unscramble the Word</h3><p class="text-gray-400 mb-2">Hint: <span id="ws-hint"></span></p><p class="text-gray-400 mb-4 text-sm">Starts with the letter: <span id="ws-start-letter" class="font-bold text-lg"></span></p><div id="ws-scrambled-word" class="text-4xl font-extrabold tracking-widest my-6 text-pink-400"></div><input id="ws-input" type="text" class="w-full bg-slate-800 border-2 border-slate-600 rounded-lg p-3 text-center text-white focus:outline-none focus:border-indigo-500" placeholder="Type your answer..."><button id="ws-check-btn" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-lg transition">Check Answer</button><p id="ws-feedback" class="mt-4 h-6 font-semibold"></p></div>`;
+                 gameContainer.querySelector('#text-completion').innerHTML = `<h3 class="font-bold text-xl text-center mb-1 text-white">Text Completion</h3><p class="text-gray-400 text-center mb-6">Complete the text by dragging the correct words into the blanks.</p><div class="bg-slate-700 p-6 rounded-lg max-w-3xl mx-auto"><p id="cloze-text" class="text-lg leading-relaxed mb-6">The massive use of social media among teenagers has become a <span class="cloze-drop-zone inline-flex justify-center items-center align-middle bg-slate-800 rounded-md w-40 h-8 mx-1 p-1" data-answer="double-edged sword"></span>. On one hand, it provides access to information and social <span class="cloze-drop-zone inline-flex justify-center items-center align-middle bg-slate-800 rounded-md w-32 h-8 mx-1 p-1" data-answer="connections"></span>, but on the other, its unwise use can have a significant negative impact. One of the main impacts is social <span class="cloze-drop-zone inline-flex justify-center items-center align-middle bg-slate-800 rounded-md w-32 h-8 mx-1 p-1" data-answer="comparison"></span>.</p><div id="cloze-word-bank" class="flex flex-wrap justify-center gap-3 border-t border-slate-600 pt-4"></div><button id="cloze-check-btn" class="block mx-auto mt-6 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-8 rounded-lg transition">Check Answers</button><p id="cloze-feedback" class="mt-4 h-6 font-semibold text-center"></p></div>`;
+            }
+
+            // Inject Contact Form HTML
+            const contactContainer = document.getElementById('contact-container');
+            if (contactContainer) {
+                contactContainer.innerHTML = `
+                <form id="contact-form" class="active space-y-6">
+                    <div>
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-300">Your Name</label>
+                        <input type="text" id="name" class="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="John Doe" required>
+                    </div>
+                     <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Your Email</label>
+                        <input type="email" id="email" class="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="name@example.com" required>
+                    </div>
+                     <div>
+                        <label for="message" class="block mb-2 text-sm font-medium text-gray-300">Your Message</label>
+                        <textarea id="message" rows="4" class="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="Leave your feedback here..." required></textarea>
+                    </div>
+                    <button type="submit" class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-500 font-medium rounded-lg text-sm px-5 py-3 text-center transition">Send Message</button>
+                </form>
+                <div id="contact-success-message" class="text-center items-center justify-center flex-col h-64">
+                    <i class="fas fa-check-circle text-6xl text-green-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-white">Thank You!</h3>
+                    <p class="text-gray-300">Your feedback has been received. We appreciate your input!</p>
+                </div>`;
+            }
+
+            // --- Game Logic ---
+            function setupGames() {
+                 const tabs = document.querySelectorAll('.game-tab');
+                const gameContents = document.querySelectorAll('.game-content');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(item => item.classList.remove('active'));
+                        tab.classList.add('active');
+                        const target = tab.getAttribute('data-tab');
+                        gameContents.forEach(content => {
+                            content.classList.remove('active');
+                            if (content.id === target) content.classList.add('active');
+                        });
+                        if (target === 'story-structure') setupStoryScramble();
+                        if (target === 'word-scramble') setupWordScramble();
+                        if (target === 'text-completion') setupClozeGame();
+                    });
+                });
+                setupStoryScramble(); // Initialize first game
+            }
+            
+            function setupStoryScramble() {
+                const draggableContainer = document.getElementById('draggable-items');
+                if(!draggableContainer) return;
+                draggableContainer.innerHTML = `
+                    <div class="draggable-item bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md" draggable="true" data-type="complication">Complication</div>
+                    <div class="draggable-item bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md" draggable="true" data-type="resolution">Resolution</div>
+                    <div class="draggable-item bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md" draggable="true" data-type="orientation">Orientation</div>`;
+                const draggableItems = document.querySelectorAll('.draggable-item');
+                const dropZones = document.querySelectorAll('.drop-zone');
+                const narrativeFeedback = document.getElementById('narrative-feedback');
+                let correctDrops = 0;
+                draggableItems.forEach(item => item.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', item.dataset.type); setTimeout(() => item.style.display = 'none', 0); }));
+                dropZones.forEach(zone => {
+                    zone.innerHTML = `<strong>${zone.dataset.target.charAt(0).toUpperCase() + zone.dataset.target.slice(1)}:</strong> ...`;
+                    zone.classList.remove('correct-drop', 'incorrect-drop');
+                    zone.ondragover = e => { e.preventDefault(); if (!zone.classList.contains('correct-drop')) zone.classList.add('over'); };
+                    zone.ondragleave = () => zone.classList.remove('over');
+                    zone.ondrop = e => {
+                        e.preventDefault(); zone.classList.remove('over');
+                        const draggedType = e.dataTransfer.getData('text/plain');
+                        if (draggedType === zone.dataset.target) {
+                            zone.classList.add('correct-drop'); zone.innerHTML = `<strong>Correct!</strong> The '${draggedType}' element goes here.`;
+                            correctDrops++;
+                            if (correctDrops === 3) { narrativeFeedback.textContent = 'Excellent!'; narrativeFeedback.style.color = '#22c55e'; }
+                        } else {
+                            zone.classList.add('incorrect-drop');
+                            document.querySelector(`.draggable-item[data-type='${draggedType}']`).style.display = 'inline-block';
+                            setTimeout(() => zone.classList.remove('incorrect-drop'), 1000);
+                        }
+                    };
+                });
+            }
+
+            function setupWordScramble() {
+                const data = [{ s: 'FITARAN', a: 'NARRATIVE', h: 'Narrates events chronologically.', l: 'N' }, { s: 'SIPOXIETON', a: 'EXPOSITION', h: 'Explains or informs.', l: 'E' }, { s: 'DURACELORP', a: 'PROCEDURAL', h: 'Gives instructions.', l: 'P' }, { s: 'SIVEAPURES', a: 'PERSUASIVE', h: 'Aims to convince.', l: 'P' }];
+                let idx = 0, score = 0;
+                const hintEl = document.getElementById('ws-hint'), letterEl = document.getElementById('ws-start-letter'), wordEl = document.getElementById('ws-scrambled-word'), inputEl = document.getElementById('ws-input'), btn = document.getElementById('ws-check-btn'), feedbackEl = document.getElementById('ws-feedback'), scoreEl = document.getElementById('ws-score'), counterEl = document.getElementById('ws-game-counter');
+                if(!btn) return;
+                function load() {
+                    const current = data[idx];
+                    hintEl.textContent = current.h; letterEl.textContent = current.l; wordEl.textContent = current.s;
+                    inputEl.value = ''; inputEl.focus(); feedbackEl.textContent = '';
+                    counterEl.textContent = `Game ${idx + 1}/${data.length}`;
+                }
+                btn.onclick = () => {
+                    if (inputEl.value.toUpperCase() === data[idx].a) {
+                        score++; scoreEl.textContent = score;
+                        feedbackEl.textContent = 'Correct!'; feedbackEl.style.color = '#22c55e';
+                        idx++;
+                        if (idx < data.length) setTimeout(load, 1500); else feedbackEl.textContent = `Game Over! Final score: ${score}/${data.length}.`;
+                    } else { feedbackEl.textContent = 'Incorrect!'; feedbackEl.style.color = '#ef4444'; }
+                };
+                load();
+            }
+
+            function setupClozeGame() {
+                const bank = document.getElementById('cloze-word-bank'), btn = document.getElementById('cloze-check-btn'), feedback = document.getElementById('cloze-feedback');
+                if(!bank) return;
+                const words = ['double-edged sword', 'connections', 'comparison'], distractors = ['social dilemma', 'network', 'anxiety'];
+                bank.innerHTML = '';
+                [...words, ...distractors].sort(() => .5 - Math.random()).forEach(w => {
+                    const el = document.createElement('div');
+                    el.className = 'cloze-word bg-cyan-600 text-white font-semibold py-1 px-3 rounded-md shadow-md';
+                    el.textContent = w; el.draggable = true;
+                    el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', w); setTimeout(() => el.style.display = 'none', 0); });
+                    bank.appendChild(el);
+                });
+                document.querySelectorAll('.cloze-drop-zone').forEach(zone => {
+                    zone.innerHTML = ''; zone.classList.remove('correct-drop', 'incorrect-drop');
+                    zone.ondragover = e => e.preventDefault();
+                    zone.ondrop = e => {
+                        e.preventDefault();
+                        const word = e.dataTransfer.getData('text/plain');
+                        const el = Array.from(bank.children).find(c => c.textContent === word) || document.querySelector(`.cloze-word[style*="display: none"]`);
+                        if (zone.children.length > 0) bank.appendChild(zone.firstChild);
+                        if (el) { zone.appendChild(el); el.style.display = 'block'; }
+                    };
+                });
+                btn.onclick = () => {
+                    let correct = 0;
+                    document.querySelectorAll('.cloze-drop-zone').forEach(z => {
+                        const word = z.children[0] ? z.children[0].textContent : '';
+                        if (word === z.dataset.answer) { z.classList.add('correct-drop'); z.classList.remove('incorrect-drop'); correct++; } 
+                        else { z.classList.add('incorrect-drop'); z.classList.remove('correct-drop'); }
+                    });
+                    feedback.textContent = `You got ${correct}/3 correct.`;
+                    feedback.style.color = correct === 3 ? '#22c55e' : '#facc15';
+                };
+            }
+
+            if(gameContainer) setupGames();
+           
+            // --- Contact Form Logic ---
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    contactForm.style.display = 'none';
+                    document.getElementById('contact-success-message').classList.add('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
